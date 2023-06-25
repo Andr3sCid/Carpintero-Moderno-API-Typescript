@@ -12,5 +12,6 @@ const publicationSchema = new mongoose_1.Schema({
     description: { type: String },
     steps: { type: mongoose_1.Schema.Types.Mixed },
     creator: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
+    createdAt: { type: Date, default: Date.now },
 });
 exports.PublicationModel = (0, mongoose_1.model)('Publication', publicationSchema);

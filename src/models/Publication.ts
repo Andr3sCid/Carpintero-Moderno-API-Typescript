@@ -10,6 +10,7 @@ interface Publication extends Document {
   description: string;
   steps: any;
   creator: Types.ObjectId;
+  createdAt: Date;
 }
 
 const publicationSchema = new Schema<Publication>({
@@ -22,6 +23,7 @@ const publicationSchema = new Schema<Publication>({
   description: { type: String },
   steps: { type: Schema.Types.Mixed },
   creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export const PublicationModel = model<Publication>('Publication', publicationSchema);
