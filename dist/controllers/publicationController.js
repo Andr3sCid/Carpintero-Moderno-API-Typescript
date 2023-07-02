@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userPublications = exports.createPublication = exports.listPublications = void 0;
+exports.searchPublications = exports.userPublications = exports.createPublication = exports.listPublications = void 0;
 const Publication_1 = __importDefault(require("../models/Publication"));
 const User_1 = __importDefault(require("../models/User"));
-const listPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const listPublications = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sortedPublications = yield Publication_1.default.find()
             .sort({ createdAt: -1 })
@@ -24,7 +24,7 @@ const listPublications = (req, res) => __awaiter(void 0, void 0, void 0, functio
         return res.status(200).json(sortedPublications);
     }
     catch (error) {
-        return res.status(500).json('Error al obtener las publicaciones: ' + error);
+        return res.status(500).json("Error al obtener las publicaciones: " + error);
     }
 });
 exports.listPublications = listPublications;
@@ -33,33 +33,45 @@ const createPublication = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const newPublication = new Publication_1.default(req.body);
         newPublication.creator = user._id;
-        yield newPublication.save().catch((function (err) {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                console.log('meow');
-            }
-        }));
+        yield newPublication.save();
         return res.send(newPublication);
     }
     catch (error) {
-        return res.status(500).json('Error al guardar la publicación: ' + error);
+        return res.status(500).json("Error al guardar la publicación: " + error);
     }
 });
 exports.createPublication = createPublication;
 const userPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.params);
     try {
-        const user = yield User_1.default.findById(req.params.email);
+        console.log(req.params);
+        const user = yield User_1.default.find({ email: req.params.email });
         if (!user)
-            return res.status(404).json('Usuario no encontrado');
-        const publications = yield Publication_1.default.find({ creator: user._id })
-            .sort({ createdAt: -1 })
-            .exec();
+            return res.status(404).json("Usuario no encontrado");
+        const publications = yield Publication_1.default.find({ creator: user[0]._id });
         return res.status(200).json(publications);
     }
     catch (error) {
-        return res.status(500).json('Error al obtener las publicaciones: ' + error);
+        return res.status(500).json("Error al obtener las publicaciones: " + error);
     }
 });
 exports.userPublications = userPublications;
+const searchPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const filter = {};
+        if (req.body.title)
+            filter.title = { $regex: req.body.title, $options: "i" };
+        if (req.body.difficulty)
+            filter.difficulty = req.body.difficulty;
+        if (req.body.materials)
+            filter.materials = req.body.materials;
+        if (req.body.tools)
+            filter.tools = req.body.tools;
+        const publications = yield Publication_1.default.find(filter);
+        return res.status(200).json(publications);
+    }
+    catch (error) {
+        return res.status(500).json("Error al obtener las publicaciones: " + error);
+    }
+});
+exports.searchPublications = searchPublications;
