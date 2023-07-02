@@ -1,11 +1,9 @@
 import { Router } from "express";
+import {listPublications} from "../controllers/publicationController";
 import passport from "passport";
 
 const router = Router();
 
-router.get('/',(req, res)=>{
-    res.send('success');
-    console.log('Success');
-});
+router.get('/publication/listHomePage', listPublications);
 
 export default router;

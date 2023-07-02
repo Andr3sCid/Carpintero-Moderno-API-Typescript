@@ -7,6 +7,7 @@ const express_1 = require("express");
 const passport_1 = __importDefault(require("passport"));
 const router = (0, express_1.Router)();
 router.get('/inAll', passport_1.default.authenticate('jwt', { session: false }), (req, res) => {
-    res.send('success');
+    res.send(passport_1.default.session.toString());
 });
+//Publications
 exports.default = router;

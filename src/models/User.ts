@@ -1,10 +1,11 @@
-import { Schema, model, Document, Types } from 'mongoose';
+import {Document, model, Schema, Types} from 'mongoose';
 import bcrypt from "bcrypt";
+
 export interface IUser extends Document {
   userName: string;
-  name: string;
+  fullName: string;
   password: string;
-  numFollowers: number;
+  followers: number;
   valorationProm: number;
   notifications: Types.ObjectId[];
   comparePassword: (password: string) => Promise<boolean>;
@@ -12,9 +13,9 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>({
   userName: { type: String, required: true },
-  name: { type: String, required: true },
+  fullName: { type: String, required: true },
   password: { type: String, required: true },
-  numFollowers: { type: Number, default: 0 },
+  followers: { type: Number, default: 0 },
   valorationProm: { type: Number, default: 0 },
   notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
 });
@@ -23,8 +24,7 @@ userSchema.pre('save',async function(next){
   const user = this;
   if (!user.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(user.password, salt);
-  user.password = hash;
+  user.password = await bcrypt.hash(user.password, salt);
   next();
 });
 

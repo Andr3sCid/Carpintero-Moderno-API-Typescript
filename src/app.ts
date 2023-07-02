@@ -2,16 +2,14 @@ import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
 import authRoutes from './routers/auth.routes';
-import specialRoutes from './routers/special.routes';
 import normalRoutes from './routers/normal.routes';
 import passport from 'passport';
-import passportMiddleware from './middleware/passport';
+import passportMiddleware from './middleware/passportMiddleWare';
 
 
 const app = express();
 
 //configurations
-
 app.set('port', process.env.PORT || 8080);
 
 // middleware
@@ -28,7 +26,6 @@ app.get('/',(req, res)=>{
 });
 
 app.use(authRoutes);
-app.use(specialRoutes);
 app.use(normalRoutes);
 
 export default app;

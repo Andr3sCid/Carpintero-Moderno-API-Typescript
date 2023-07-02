@@ -16,9 +16,9 @@ const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.Schema({
     userName: { type: String, required: true },
-    name: { type: String, required: true },
+    fullName: { type: String, required: true },
     password: { type: String, required: true },
-    numFollowers: { type: Number, default: 0 },
+    followers: { type: Number, default: 0 },
     valorationProm: { type: Number, default: 0 },
     notifications: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Notification' }],
 });
@@ -28,8 +28,7 @@ userSchema.pre('save', function (next) {
         if (!user.isModified('password'))
             return next();
         const salt = yield bcrypt_1.default.genSalt(10);
-        const hash = yield bcrypt_1.default.hash(user.password, salt);
-        user.password = hash;
+        user.password = yield bcrypt_1.default.hash(user.password, salt);
         next();
     });
 });
