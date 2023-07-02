@@ -10,8 +10,8 @@ const userController_1 = require("../controllers/userController");
 const publicationController_1 = require("../controllers/publicationController");
 const passport_1 = __importDefault(require("passport"));
 const router = (0, express_1.Router)();
-router.post('/singup', userController_1.singUp);
-router.post('/singin', userController_1.singIn);
+router.post('/signup', userController_1.singUp);
+router.post('/signin', userController_1.singIn);
 //Método para crear una publicacion
 router.post('/publication/create', passport_1.default.authenticate('jwt', { session: false }), publicationController_1.createPublication);
 exports.default = router;

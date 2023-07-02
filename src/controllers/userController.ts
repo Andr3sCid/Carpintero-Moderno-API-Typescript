@@ -34,7 +34,7 @@ export const singIn = async (req: Request, res: Response)=>{
 
     const isMatch = await user.comparePassword(req.body.password);
     if(isMatch){
-        return res.status(200).json({token: createToken(user)})
+        return res.status(200).json({user, token: createToken(user)})
     }
 
     return res.status(400).json({msg: "Contraseña Incorrecta"})
