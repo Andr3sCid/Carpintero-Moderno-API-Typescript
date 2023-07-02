@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPublication = exports.listPublications = void 0;
+exports.userPublications = exports.createPublication = exports.listPublications = void 0;
 const Publication_1 = __importDefault(require("../models/Publication"));
 const User_1 = __importDefault(require("../models/User"));
 const listPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,3 +48,18 @@ const createPublication = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.createPublication = createPublication;
+const userPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findById(req.params.email);
+        if (!user)
+            return res.status(404).json('Usuario no encontrado');
+        const publications = yield Publication_1.default.find({ creator: user._id })
+            .sort({ createdAt: -1 })
+            .exec();
+        return res.status(200).json(publications);
+    }
+    catch (error) {
+        return res.status(500).json('Error al obtener las publicaciones: ' + error);
+    }
+});
+exports.userPublications = userPublications;

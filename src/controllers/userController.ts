@@ -5,15 +5,15 @@ import config from "./../config/config";
 
 
 function createToken(user: IUser){
-    return jwt.sign({id:user.id, userName: user.userName}, config.jwtSecret);
+    return jwt.sign({id:user.id, userName: user.email}, config.jwtSecret);
 }
 
 export const singUp = async (req: Request, res: Response)=>{
-    if(!req.body.userName || !req.body.password){
+    if(!req.body.email || !req.body.password){
         return res.status(400).json({msg:"Sin datos"});
     }
 
-    const user = await User.findOne({userName: req.body.userName});
+    const user = await User.findOne({email: req.body.email});
     if(user){
         return res.status(400).json({msg:"Usuario ya existente"});
     }
@@ -24,10 +24,10 @@ export const singUp = async (req: Request, res: Response)=>{
 }
 
 export const singIn = async (req: Request, res: Response)=>{
-    if(!req.body.userName || !req.body.password){
+    if(!req.body.email || !req.body.password){
         return res.status(400).json({msg:"Sin datos"});
     }
-    const user = await User.findOne({userName: req.body.userName});
+    const user = await User.findOne({email: req.body.email});
     if(!user){
         return res.status(400).json({msg:"Usuario no existe"});
     }

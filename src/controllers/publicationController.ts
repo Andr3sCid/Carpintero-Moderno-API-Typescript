@@ -1,6 +1,5 @@
 import {Request, Response} from 'express';
 import Publication from '../models/Publication';
-import jwt from 'jsonwebtoken';
 import User from "../models/User";
 
 export const listPublications = async (req: Request, res: Response) => {
@@ -33,3 +32,18 @@ export const  createPublication = async (req: Request, res: Response)=>{
     return res.status(500).json('Error al guardar la publicación: '+error);
   }
 }
+
+export const userPublications = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.email);
+    if (!user) return res.status(404).json('Usuario no encontrado');
+
+    const publications = await Publication.find({ creator: user._id })
+        .sort({ createdAt: -1 })
+        .exec();
+
+    return res.status(200).json(publications);
+  } catch (error) {
+    return res.status(500).json('Error al obtener las publicaciones: ' + error);
+  }
+};

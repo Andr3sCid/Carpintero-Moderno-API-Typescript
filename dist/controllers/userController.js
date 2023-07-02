@@ -17,13 +17,13 @@ const User_1 = __importDefault(require("../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("./../config/config"));
 function createToken(user) {
-    return jsonwebtoken_1.default.sign({ id: user.id, userName: user.userName }, config_1.default.jwtSecret);
+    return jsonwebtoken_1.default.sign({ id: user.id, userName: user.email }, config_1.default.jwtSecret);
 }
 const singUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.body.userName || !req.body.password) {
+    if (!req.body.email || !req.body.password) {
         return res.status(400).json({ msg: "Sin datos" });
     }
-    const user = yield User_1.default.findOne({ userName: req.body.userName });
+    const user = yield User_1.default.findOne({ email: req.body.email });
     if (user) {
         return res.status(400).json({ msg: "Usuario ya existente" });
     }
@@ -33,10 +33,10 @@ const singUp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.singUp = singUp;
 const singIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.body.userName || !req.body.password) {
+    if (!req.body.email || !req.body.password) {
         return res.status(400).json({ msg: "Sin datos" });
     }
-    const user = yield User_1.default.findOne({ userName: req.body.userName });
+    const user = yield User_1.default.findOne({ email: req.body.email });
     if (!user) {
         return res.status(400).json({ msg: "Usuario no existe" });
     }
