@@ -16,6 +16,7 @@ exports.singIn = exports.singUp = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("./../config/config"));
+const Publication_1 = __importDefault(require("../models/Publication"));
 function createToken(user) {
     return jsonwebtoken_1.default.sign({ id: user.id, userName: user.email }, config_1.default.jwtSecret);
 }
@@ -42,7 +43,10 @@ const singIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const isMatch = yield user.comparePassword(req.body.password);
     if (isMatch) {
-        return res.status(200).json({ user, token: createToken(user) });
+        let userJson = {};
+        userJson = user.toJSON();
+        userJson.posts = (yield Publication_1.default.find({ creator: user._id })).length;
+        return res.status(200).json({ userJson, token: createToken(user) });
     }
     return res.status(400).json({ msg: "Contraseña Incorrecta" });
 });

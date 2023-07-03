@@ -2,6 +2,7 @@ import {Request,Response} from 'express';
 import User, {IUser} from '../models/User';
 import jwt from 'jsonwebtoken';
 import config from "./../config/config";
+import Publication from '../models/Publication';
 
 
 function createToken(user: IUser){
@@ -34,7 +35,10 @@ export const singIn = async (req: Request, res: Response)=>{
 
     const isMatch = await user.comparePassword(req.body.password);
     if(isMatch){
-        return res.status(200).json({user, token: createToken(user)})
+        let userJson:any = {};
+        userJson = user.toJSON();
+        userJson.posts = (await Publication.find({ creator: user._id })).length;
+        return res.status(200).json({userJson, token: createToken(user)})
     }
 
     return res.status(400).json({msg: "Contraseña Incorrecta"})
