@@ -3,7 +3,6 @@ import User, {IUser} from '../models/User';
 import jwt from 'jsonwebtoken';
 import config from "./../config/config";
 import Publication from '../models/Publication';
-import {saveUser} from '../database/databaseFirebase';
 
 
 function createToken(user: IUser){
