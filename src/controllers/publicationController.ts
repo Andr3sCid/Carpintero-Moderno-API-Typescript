@@ -58,10 +58,10 @@ export const userPublications = async (req: Request, res: Response) => {
 export const searchPublications = async (req: Request, res: Response) => {
   try {
     const filter: any = {};
-    if (req.params.title) filter.title = { $regex: req.params.title, $options: "i" };
-    if (req.params.difficulty) filter.difficulty = req.params.difficulty;
-    if (req.params.materials) filter.materials = req.params.materials ;
-    if (req.params.tools) filter.tools =  req.params.tools ;
+    if (req.query.title) filter.title = { $regex: req.query.title, $options: "i" };
+    if (req.query.difficulty) filter.difficulty = req.query.difficulty;
+    if (req.query.materials) filter.materials = req.query.materials ;
+    if (req.query.tools) filter.tools =  req.query.tools ;
     const publications = await Publication.find(filter);
     return res.status(200).json(publications);
   } catch (error) {
