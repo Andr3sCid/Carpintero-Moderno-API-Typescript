@@ -3,6 +3,7 @@ import User, {IUser} from '../models/User';
 import jwt from 'jsonwebtoken';
 import config from "./../config/config";
 import Publication from '../models/Publication';
+import {saveUser} from '../database/databaseFirebase';
 
 
 function createToken(user: IUser){
@@ -40,6 +41,5 @@ export const singIn = async (req: Request, res: Response)=>{
         user.posts = (await Publication.find({ creator: foundedUser._id })).length;
         return res.status(200).json({user, token: createToken(foundedUser)})
     }
-
     return res.status(400).json({msg: "Contraseña Incorrecta"})
 }

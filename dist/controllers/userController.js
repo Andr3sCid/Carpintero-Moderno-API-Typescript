@@ -37,16 +37,16 @@ const singIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.body.email || !req.body.password) {
         return res.status(400).json({ msg: "Sin datos" });
     }
-    const user = yield User_1.default.findOne({ email: req.body.email });
-    if (!user) {
+    const foundedUser = yield User_1.default.findOne({ email: req.body.email });
+    if (!foundedUser) {
         return res.status(400).json({ msg: "Usuario no existe" });
     }
-    const isMatch = yield user.comparePassword(req.body.password);
+    const isMatch = yield foundedUser.comparePassword(req.body.password);
     if (isMatch) {
-        let userJson = {};
-        userJson = user.toJSON();
-        userJson.posts = (yield Publication_1.default.find({ creator: user._id })).length;
-        return res.status(200).json({ userJson, token: createToken(user) });
+        let user = {};
+        user = foundedUser.toJSON();
+        user.posts = (yield Publication_1.default.find({ creator: foundedUser._id })).length;
+        return res.status(200).json({ user, token: createToken(foundedUser) });
     }
     return res.status(400).json({ msg: "Contraseña Incorrecta" });
 });

@@ -1,9 +1,21 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
 const publicationController_1 = require("../controllers/publicationController");
+const StepsController_1 = require("../controllers/StepsController");
+const storage = multer_1.default.memoryStorage();
+const upload = (0, multer_1.default)({ storage: storage });
 const router = (0, express_1.Router)();
-router.get('/publication/listHomePage', publicationController_1.listPublications);
-router.get('/publication/listUser/:email', publicationController_1.userPublications);
-router.get('/publication/search', publicationController_1.searchPublications);
+router.get('/publication/listHomePage/', publicationController_1.listPublications);
+router.get('/publication/listUser/', publicationController_1.userPublications);
+router.get('/publication/search/', publicationController_1.searchPublications);
+router.get('/publication/get/', publicationController_1.getPublication);
+router.get('/img/upload/', upload.single('imagen'), publicationController_1.uploadImg);
+router.get('/img/get/', publicationController_1.getImageById);
+router.post('/step/create/', upload.single('image'), StepsController_1.createSteps);
+router.get('/step/get/', StepsController_1.getSteps);
 exports.default = router;

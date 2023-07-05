@@ -12,9 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchPublications = exports.userPublications = exports.createPublication = exports.listPublications = void 0;
+exports.getImageById = exports.uploadImg = exports.searchPublications = exports.userPublications = exports.getPublication = exports.createPublication = exports.listPublications = void 0;
 const Publication_1 = __importDefault(require("../models/Publication"));
 const User_1 = __importDefault(require("../models/User"));
+const ImageModel_1 = __importDefault(require("../models/ImageModel"));
 const listPublications = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sortedPublications = yield Publication_1.default.find()
@@ -31,18 +32,33 @@ exports.listPublications = listPublications;
 const createPublication = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let user = new User_1.default(req.user);
     try {
+        let imgId = "";
+        if (req.file) {
+            imgId = yield imageSave(req.file);
+        }
         const newPublication = new Publication_1.default(req.body);
         newPublication.creator = user._id;
+        newPublication.previewImage = req.hostname + ':' + req.socket.localPort + "/img/get/?id=" + imgId;
         yield newPublication.save();
-        return res.send(newPublication);
+        return res.send(newPublication._id);
     }
     catch (error) {
         return res.status(500).json("Error al guardar la publicación: " + error);
     }
 });
 exports.createPublication = createPublication;
+const getPublication = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const publication = yield Publication_1.default.findById(req.query.id);
+        return res.status(200).json(publication);
+    }
+    catch (error) {
+        return res.status(500).json("Error al obtener la publicación: " + error);
+    }
+});
+exports.getPublication = getPublication;
 const userPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.params);
+    console.log(req.params.email);
     try {
         console.log(req.params);
         const user = yield User_1.default.find({ email: req.params.email });
@@ -59,14 +75,14 @@ exports.userPublications = userPublications;
 const searchPublications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const filter = {};
-        if (req.body.title)
-            filter.title = { $regex: req.body.title, $options: "i" };
-        if (req.body.difficulty)
-            filter.difficulty = req.body.difficulty;
-        if (req.body.materials)
-            filter.materials = req.body.materials;
-        if (req.body.tools)
-            filter.tools = req.body.tools;
+        if (req.params.title)
+            filter.title = { $regex: req.params.title, $options: "i" };
+        if (req.params.difficulty)
+            filter.difficulty = req.params.difficulty;
+        if (req.params.materials)
+            filter.materials = req.params.materials;
+        if (req.params.tools)
+            filter.tools = req.params.tools;
         const publications = yield Publication_1.default.find(filter);
         return res.status(200).json(publications);
     }
@@ -75,3 +91,53 @@ const searchPublications = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.searchPublications = searchPublications;
+const uploadImg = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (req.file) {
+            const imageFile = req.file;
+            const image = new ImageModel_1.default({
+                image: imageFile.buffer,
+                name: imageFile.originalname
+            });
+            yield image.save();
+            res.status(200).json({ message: 'Imagen guardada exitosamente' });
+        }
+        else {
+            throw new Error('No se encontró ninguna imagen en la solicitud');
+        }
+    }
+    catch (error) {
+        console.error('Error al guardar la imagen:', error);
+        res.status(500).json({ imagen: req.file });
+    }
+});
+exports.uploadImg = uploadImg;
+const getImageById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const image = yield ImageModel_1.default.findById(req.query.id);
+        if (!image) {
+            return res.status(404).json({ error: 'Imagen no encontrada' });
+        }
+        res.set({
+            'Content-Type': 'image/png',
+            'Content-Disposition': 'inline',
+        });
+        res.send(image.image);
+    }
+    catch (error) {
+        console.error('Error al obtener la imagen:', error);
+        res.status(500).json({ error: 'Ocurrió un error al obtener la imagen' });
+    }
+});
+exports.getImageById = getImageById;
+function imageSave(img) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const imageFile = img;
+        const image = new ImageModel_1.default({
+            image: imageFile.buffer,
+            name: imageFile.originalname
+        });
+        const imgId = (yield image.save())._id;
+        return imgId;
+    });
+}

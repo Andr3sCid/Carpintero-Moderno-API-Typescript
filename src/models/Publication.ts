@@ -8,7 +8,7 @@ interface IPublication extends Document {
   difficulty: number;
   previewImage: string;
   description: string;
-  steps: any;
+  steps: any[];
   creator: Types.ObjectId;
   createdAt: Date;
 }
