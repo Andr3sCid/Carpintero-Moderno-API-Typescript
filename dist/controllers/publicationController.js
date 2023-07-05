@@ -38,7 +38,7 @@ const createPublication = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
         const newPublication = new Publication_1.default(req.body);
         newPublication.creator = user._id;
-        newPublication.previewImage = req.hostname + ':' + req.socket.localPort + "/img/get/?id=" + imgId;
+        newPublication.previewImage = req.protocol + '://' + req.hostname + "/img/get/?id=" + imgId;
         yield newPublication.save();
         return res.send(newPublication._id);
     }

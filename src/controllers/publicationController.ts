@@ -25,7 +25,7 @@ export const createPublication = async (req: Request, res: Response) => {
     }
     const newPublication = new Publication(req.body);
     newPublication.creator = user._id;
-    newPublication.previewImage = req.hostname+':'+req.socket.localPort+"/img/get/?id="+imgId;
+    newPublication.previewImage = req.protocol+'://'+req.hostname+"/img/get/?id="+imgId;
     await newPublication.save();
     return res.send(newPublication._id);
   } catch (error) {
